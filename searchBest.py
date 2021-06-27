@@ -12,7 +12,7 @@ from xgboost import XGBRegressor
 
 
 
-def bestSearch (param, df, target):
+def bestSearch(param, df, target):
     '''
     description : A function that finds the best combination of scale and model with only numeric columns
 
@@ -37,7 +37,7 @@ def bestSearch (param, df, target):
 
 
 
-def bestSearchEncoding(param, df, target, encoding_cols, scaling_cols):
+def bestSearchEncoding(param, df, target, encoding_cols):
     '''
     description : A function that finds the optimal combination of scalers, models, and encoders in data containing categorical variables
 
@@ -45,7 +45,6 @@ def bestSearchEncoding(param, df, target, encoding_cols, scaling_cols):
     :param df: Data to scale and encode
     :param target: Column to predict
     :param encoding_cols: Column to encode
-    :param scaling_cols: Column to scale
     :return: Returns the best combination with the highest score.
     '''
 
@@ -53,6 +52,13 @@ def bestSearchEncoding(param, df, target, encoding_cols, scaling_cols):
     scaler = np.array(param.get('scaler'))
     model = np.array(param.get('model'))
     bestDi = {}
+
+    if (encoder == None):
+       encoder = np.array(["labelEncoder", "oneHotEncoder"])
+    elif (scaler == None):
+        scaler = np.array(["standard", "robust", "minmax"])
+    elif (model == None):
+        model = np.array(["adaboost", "decisiontree", "bagging", "XGBoost", "gradient", "randomforest"])
 
     for e in encoder:
         encode_df = encoding(e, encoding_cols, df)

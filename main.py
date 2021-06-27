@@ -183,6 +183,7 @@ bestParam = {
         "encoder": ["labelEncoder", "oneHotEncoder"],
         "model": ["adaboost", "decisiontree", "bagging", "XGBoost", "gradient", "randomforest"]
 }
+
 encoding_cols = ['LotConfig']
 scaling_cols = ['LotFrontage', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea', 'BsmtFinSF1',
        'TotalBsmtSF', 'GrLivArea', 'TotRmsAbvGrd', 'Fireplaces',
