@@ -185,10 +185,6 @@ bestParam = {
 }
 
 encoding_cols = ['LotConfig']
-scaling_cols = ['LotFrontage', 'YearBuilt', 'YearRemodAdd', 'MasVnrArea', 'BsmtFinSF1',
-       'TotalBsmtSF', 'GrLivArea', 'TotRmsAbvGrd', 'Fireplaces',
-       'OverallTotal', 'BathTotal', 'FlrSFTotal', 'Total_porch_sf',
-       'hasfireplace']
 
-best_params, best_score = searchBest.bestSearchEncoding(bestParam, df, target, encoding_cols, scaling_cols)
+best_params, best_score = searchBest.bestSearchEncoding(bestParam, df, target, encoding_cols)
 print ("Best Combination, Score:", best_params, best_score)
