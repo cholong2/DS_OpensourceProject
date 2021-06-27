@@ -13,6 +13,15 @@ from xgboost import XGBRegressor
 
 
 def bestSearch (param, df, target):
+    '''
+    description : A function that finds the best combination of scale and model with only numeric columns
+
+    :param param: Dictionary data type, 'scaler' and 'model' are key values.
+    :param df: Data to scale
+    :param target: Column to predict
+    :return: Returns the best combination with the highest score.
+    '''
+
     scaler = np.array(param.get('scaler'))
     model = np.array(param.get('model'))
     bestDi = {}
@@ -29,14 +38,25 @@ def bestSearch (param, df, target):
 
 
 def bestSearchEncoding(param, df, target, encoding_cols, scaling_cols):
-    encoder = np.array(param.get('encoding'))
+    '''
+    description : A function that finds the optimal combination of scalers, models, and encoders in data containing categorical variables
+
+    :param param:  Dictionary data type, 'scaler', 'model', 'encoding' are key values.
+    :param df: Data to scale and encode
+    :param target: Column to predict
+    :param encoding_cols: Column to encode
+    :param scaling_cols: Column to scale
+    :return: Returns the best combination with the highest score.
+    '''
+
+    encoder = np.array(param.get('encoder'))
     scaler = np.array(param.get('scaler'))
     model = np.array(param.get('model'))
     bestDi = {}
 
     for e in encoder:
         encode_df = encoding(e, encoding_cols, df)
-        X_train, X_test, y_train, y_test = train_test_split(encode_df[scaling_cols], target, test_size=0.2, random_state=33)
+        X_train, X_test, y_train, y_test = train_test_split(encode_df, target, test_size=0.2, random_state=33)
         for s in scaler:
             X_train_scale, X_test_scale = scaled(X_train, X_test, s)
             for m in model:
@@ -46,6 +66,14 @@ def bestSearchEncoding(param, df, target, encoding_cols, scaling_cols):
 
 
 def scaled (X_train, X_test, scaler):
+    '''
+    Description : A function that scales to the scale received as a parameter.
+
+    :param X_train: train data
+    :param X_test: test data
+    :param scaler: Scaler to use, scaler has 'standard', 'minmax', and 'robust'.
+    :return: scaled train data, test data
+    '''
     if (scaler == "standard"):
         stdScaler = StandardScaler()
         X_train_scale = stdScaler.fit_transform(X_train)
@@ -67,6 +95,14 @@ def scaled (X_train, X_test, scaler):
 
 
 def encoding (encoder,cols, df):
+    '''
+    Description:  A function that replaces categorical columns with numeric columns
+
+    :param encoder: Encode to use, encoder has 'labelEncoder', 'oneHotEncoder'
+    :param cols: Categorical columns
+    :param df: data to encode
+    :return: encoded data
+    '''
     if (encoder=="labelEncoder"):
         label_df = df.copy()
         for c in cols:
@@ -86,10 +122,21 @@ def encoding (encoder,cols, df):
 
 
 def predict (model, X_train_scale, X_test_scale, y_train, y_test):
+    '''
+    Description: A function that learns targets using models received with scale and encoded data, and to predict targets with learned models.
+
+    :param model: Model to use for learning, model has '"adaboost", "decisiontree", "bagging", "XGBoost", "randomforest" and "gradient"
+    :param X_train_scale: Scale and encoded data for learning
+    :param X_test_scale: Data to use for predictions
+    :param y_train: Target data for learning
+    :param y_test: Target data to use for predictions
+    :return: Returns the score of the model.
+    '''
+
     kfold = KFold(n_splits=5, shuffle=True, random_state=0)
 
     if (model == "adaboost"):
-        # adaboost
+        #AdaBoostRegressor
         ada_reg = AdaBoostRegressor()
         ada_param = {
             'n_estimators': [50, 100],
@@ -100,7 +147,7 @@ def predict (model, X_train_scale, X_test_scale, y_train, y_test):
         return ada.score(X_test_scale, y_test)
 
     elif(model == "decisiontree"):
-        #decisiontreeRegressor
+        #DecisionTreeRegressor
         decision_tree_model = DecisionTreeRegressor()
         param_grid = {
             'criterion': ['mse'],
@@ -111,7 +158,7 @@ def predict (model, X_train_scale, X_test_scale, y_train, y_test):
         return  gsDT.score(X_test_scale, y_test)
 
     elif (model == "bagging"):
-        # bagging
+        #BaggingRegressor
         bagging = BaggingRegressor()
         b_param_grid = {
             'n_estimators': [10, 50, 100],
@@ -123,7 +170,7 @@ def predict (model, X_train_scale, X_test_scale, y_train, y_test):
         return gsBagging.score(X_test_scale, y_test)
 
     elif (model == "XGBoost"):
-        # XGBoost
+        #XGBRegressor
         XGB = XGBRegressor()
         xgb_param_grid = {
             'learning_rate': [1, 0.1, 0.01],
@@ -134,7 +181,7 @@ def predict (model, X_train_scale, X_test_scale, y_train, y_test):
         return gsXGB.score(X_test_scale, y_test)
 
     elif (model == "randomforest"):
-        #RandomForest
+        #RandomForestRegressor
         forest = RandomForestRegressor()
         fo_grid = {
             "n_estimators": [50, 100, 200, 500],
@@ -146,7 +193,7 @@ def predict (model, X_train_scale, X_test_scale, y_train, y_test):
         return gsRd.score(X_test_scale, y_test)
 
     elif (model == "gradient"):
-        # gradient boosting
+        #GradientBoostingRegressor
         gbr = GradientBoostingRegressor()
         param = {
             "n_estimators": [25, 50, 100],

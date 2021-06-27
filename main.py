@@ -180,7 +180,7 @@ df = selection_df.drop(['SalePrice'], axis=1).copy()
 
 bestParam = {
         "scaler": ["standard", "robust", "minmax"],
-        "encoding": ["labelEncoder", "oneHotEncoder"],
+        "encoder": ["labelEncoder", "oneHotEncoder"],
         "model": ["adaboost", "decisiontree", "bagging", "XGBoost", "gradient", "randomforest"]
 }
 encoding_cols = ['LotConfig']
